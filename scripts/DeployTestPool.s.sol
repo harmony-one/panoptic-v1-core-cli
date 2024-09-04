@@ -26,21 +26,21 @@ contract DeployTestPool is Script {
 
         vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
 
-        ERC20S token0 = new ERC20S("Token0", "T0", 18);
-        ERC20S token1 = new ERC20S("Token1", "T1", 18);
+        ERC20S token0 = new ERC20S("asd0", "a0", 18);
+        ERC20S token1 = new ERC20S("asd1", "a1", 18);
 
         token0.mint(vm.addr(DEPLOYER_PRIVATE_KEY), 100000e18);
         token1.mint(vm.addr(DEPLOYER_PRIVATE_KEY), 100000e18);
 
-        token0.approve(address(PANOPTIC_FACTORY), type(uint256).max);
-        token1.approve(address(PANOPTIC_FACTORY), type(uint256).max);
+        // token0.approve(address(PANOPTIC_FACTORY), type(uint256).max);
+        // token1.approve(address(PANOPTIC_FACTORY), type(uint256).max);
 
-        address unipool = UNISWAP_V3_FACTORY.createPool(address(token0), address(token1), 500);
+        // address unipool = UNISWAP_V3_FACTORY.createPool(address(token0), address(token1), 500);
 
-        //initialize at tick 0
-        IUniswapV3Pool(unipool).initialize(0x1000000000000000000000000);
+        // //initialize at tick 0
+        // IUniswapV3Pool(unipool).initialize(0x1000000000000000000000000);
 
-        PANOPTIC_FACTORY.deployNewPool(address(token0), address(token1), 500, 1337);
+        // PANOPTIC_FACTORY.deployNewPool(address(token0), address(token1), 500, 1337);
 
         vm.stopBroadcast();
     }
