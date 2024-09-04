@@ -44,7 +44,7 @@ function get(tokenA, tokenB, fee) {
     .map(key => `${key}=${envVars[key]}`)
     .join(' ');
 
-  exec(`${envString} forge script cli/lib/scripts/pool/GetPool.s.sol --rpc-url $CLI_RPC_URL --broadcast --slow --legacy`, 
+  exec(`${envString} forge script cli/lib/scripts/pool/GetPool.s.sol --rpc-url $CLI_RPC_URL --slow --legacy`, 
     (error, stdout, stderr) => {
       if (error) {
         console.error(`GetPool error: ${error.message}`);
