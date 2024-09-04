@@ -3,7 +3,6 @@ pragma solidity =0.8.18;
 
 // Foundry
 import "forge-std/Script.sol";
-import "forge-std/console.sol";
 // Uniswap - Panoptic's version 0.8
 import {IUniswapV3Factory} from "v3-core/interfaces/IUniswapV3Factory.sol";
 import {IUniswapV3Pool} from "v3-core/interfaces/IUniswapV3Pool.sol";
