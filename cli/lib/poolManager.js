@@ -33,6 +33,32 @@ function deploy(tokenA, tokenB, fee, tick = null) {
   );
 }
 
+function get(tokenA, tokenB, fee) {
+  const envVars = {
+    TOKEN_A: tokenA,
+    TOKEN_B: tokenB,
+    FEE: fee
+  };
+
+  const envString = Object.keys(envVars)
+    .map(key => `${key}=${envVars[key]}`)
+    .join(' ');
+
+  exec(`${envString} forge script cli/lib/scripts/pool/GetPool.s.sol --rpc-url $CLI_RPC_URL --broadcast --slow --legacy`, 
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`GetPool error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`GetPool stderr: ${stderr}`);
+        // return;
+      }
+      console.log(`GetPool output: ${stdout}`);
+    }
+  );
+}
+
 // exec('forge script cli/lib/scripts/pool/DeployPool.s.sol --rpc-url $CLI_RPC_URL --broadcast --slow --legacy', (error, stdout, stderr) => {
 //   if (error) {
 //     console.error(`Error executing script: ${error.message}`);
@@ -45,4 +71,4 @@ function deploy(tokenA, tokenB, fee, tick = null) {
   // console.log(`Script output: ${stdout}`);
 // });
 
-module.exports = { deploy }
+module.exports = { deploy, get }

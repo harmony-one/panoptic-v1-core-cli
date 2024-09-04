@@ -35,6 +35,7 @@ key
 
 // POOL MANAGER
 const pool = program.command('pool').description('Manage Panoptic pools');
+
 pool
   .command('deploy')
   .description('Deploy a new Panoptic pool, and if necessary, a Uniswap V3 pool based on the provided token pair and fee tier.')
@@ -50,6 +51,23 @@ pool
       console.error('Error:', error.message);
     }
   });
+
+  pool
+  .command('get')
+  .description('Retrieve the Panoptic pool associated with the provided token pair and fee tier.')
+  .requiredOption('-a, --tokenA <address>', 'The contract address of the first token in the pair (e.g., WONE).')
+  .requiredOption('-b, --tokenB <address>', 'The contract address of the second token in the pair (e.g., USDC).')
+  .requiredOption('-f --fee <fee>', 'The fee tier for the Uniswap V3 pool, specified in hundredths of a basis point (e.g., 500 for 0.05%).')
+  .action(async (options) => {
+    const { tokenA, tokenB, fee } = options;
+    try {
+      await poolManager.get(tokenA, tokenB, fee);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  });
+
+// OPTION MANAGER
 
 if (!process.argv.slice(2).length) {
   program.outputHelp();
