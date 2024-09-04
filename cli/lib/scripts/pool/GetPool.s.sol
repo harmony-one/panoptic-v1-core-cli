@@ -34,5 +34,9 @@ contract DeployPool is Script {
 
         require(poolAddress != address(0), "Panoptic pool does not exist");
         console.log("Panoptic Pool Address:", poolAddress);
+
+        // collateral trackers
+        console.log("Collateral Tracker for Token A:", address(panopticPool.collateralToken0()));
+        console.log("Collateral Tracker for Token B:", address(panopticPool.collateralToken1()));
     }
 }

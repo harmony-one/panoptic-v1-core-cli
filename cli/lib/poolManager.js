@@ -56,9 +56,9 @@ function get(tokenA, tokenB, fee) {
         }
     
         const relevantLogs = stdout
-          .split('\n')
-          .filter(line => line.includes("Uniswap V3 Pool Address") || line.includes("Panoptic Pool Address"))
-          .join('\n');
+          // .split('\n')
+          // .filter(line => line.includes("Uniswap V3 Pool Address") || line.includes("Panoptic Pool Address"))
+          // .join('\n');
     
         if (relevantLogs) {
           console.log(`GetPool output:\n${relevantLogs}`);
