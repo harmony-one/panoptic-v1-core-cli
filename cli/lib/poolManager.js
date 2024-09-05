@@ -1,5 +1,5 @@
 const { exec } = require('child_process');
-const { getAddress, calculateSalt, generateNonce } = require('./helpers/utils');
+const { getAddress, calculateSalt, generateNonce, createEnvString } = require('./helpers/utils');
 
 
 function deploy(tokenA, tokenB, fee, tick = null) {
@@ -14,9 +14,7 @@ function deploy(tokenA, tokenB, fee, tick = null) {
     SALT: salt.toString() // convert salt (BigNumber) to string
   };
 
-  const envString = Object.keys(envVars)
-    .map(key => `${key}=${envVars[key]}`)
-    .join(' ');
+  const envString = createEnvString(envVars);
 
   exec(`${envString} forge script cli/lib/scripts/pool/DeployPool.s.sol --rpc-url $CLI_RPC_URL --broadcast --slow --legacy`, 
     (error, stdout, stderr) => {
@@ -40,9 +38,7 @@ function get(tokenA, tokenB, fee) {
     FEE: fee
   };
 
-  const envString = Object.keys(envVars)
-    .map(key => `${key}=${envVars[key]}`)
-    .join(' ');
+  const envString = createEnvString(envVars);
 
     exec(`${envString} forge script cli/lib/scripts/pool/GetPool.s.sol --rpc-url $CLI_RPC_URL --slow --legacy`, 
       (error, stdout, stderr) => {

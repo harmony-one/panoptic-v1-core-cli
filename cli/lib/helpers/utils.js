@@ -32,8 +32,14 @@ function generateNonce() {
   return ethers.BigNumber.from(ethers.utils.randomBytes(4)).toNumber(); // 4 bytes
 }
 
-function getAddress() {
-  return signer.getAddress();
+async function getAddress() {
+  return await signer.getAddress();
 }
 
-module.exports = { calculateSalt, generateNonce, getAddress };
+function createEnvString(envVars) {
+  return Object.keys(envVars)
+    .map(key => `${key}=${envVars[key]}`)
+    .join(' ');
+}
+
+module.exports = { calculateSalt, generateNonce, getAddress, createEnvString };

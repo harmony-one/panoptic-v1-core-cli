@@ -17,12 +17,14 @@ import {TokenId} from "@types/TokenId.sol";
 
 contract MintOption is Script {
     using TokenId for uint256;
+
     function run() public {
         IUniswapV3Factory UNISWAP_V3_FACTORY = IUniswapV3Factory(
             vm.envAddress("CLI_UNISWAP_V3_FACTORY")
         );
 
         PanopticFactory PANOPTIC_FACTORY = PanopticFactory(vm.envAddress("CLI_PANOPTIC_FACTORY"));
+        SemiFungiblePositionManager SFPM = SemiFungiblePositionManager(vm.envAddress("CLI_SFPM"));
 
         ERC20S tokenA = ERC20S(vm.envAddress("TOKEN_A"));
         ERC20S tokenB = ERC20S(vm.envAddress("TOKEN_B"));
@@ -38,19 +40,44 @@ contract MintOption is Script {
 
         require(poolAddress != address(0), "Panoptic pool does not exist");
 
-        // 0. broadcast from this point
         uint256 PRIVATE_KEY = vm.envUint("CLI_PRIVATE_KEY");
         vm.startBroadcast(PRIVATE_KEY);
 
+        // TODO
+        // 0. The LP needs to have liquidity as it's used when depositing
+        // fund uniswap v3 lp with the tokens
+
+        // NOTE: vm.addr() does not work on Harmony
         // 1. approve and deposit tokens to collateral tracker
         // ensure the deposit amount is valid
         // - balance of user
         // - doesn't exceed the approved amount
+        tokenA.approve(address(panopticPool.collateralToken0()), type(uint256).max);
+        uint24 aAmount = uint24(vm.envUint("A_AMOUNT"));
+        address userAddress = vm.envAddress("PUBLIC_KEY");
+        uint256 aBalance = tokenA.balanceOf(userAddress);
+        require(aAmount * 10 ** tokenA.decimals() <= aBalance, "Insufficient tokenA balance");  
+
+        // TODO: fix the deposit
+        panopticPool.collateralToken0().deposit(
+            aAmount * 10 ** tokenA.decimals(),
+            userAddress
+        );
+
+        tokenB.approve(address(panopticPool.collateralToken1()), type(uint256).max);
+        uint24 bAmount = uint24(vm.envUint("B_AMOUNT"));
+        uint256 bBalance = tokenB.balanceOf(userAddress);
+        require(bAmount * 10 ** tokenB.decimals() <= bBalance, "Insufficient tokenB balance");   
+        panopticPool.collateralToken1().deposit(
+            bAmount * 10 ** tokenB.decimals(),
+            userAddress
+        );
 
         // 2. create the position with provided configurations
         // - allow for multiple leg configurations
+        uint256[] memory positionIdList = new uint256[](1);
         positionIdList[0] = uint256(0)
-            .addUniv3pool(SFPM.getPoolId(address(pp.univ3pool())))
+            .addUniv3pool(SFPM.getPoolId(address(panopticPool.univ3pool())))
             .addLeg({
                 legIndex: 0,
                 _optionRatio: 1,
@@ -63,7 +90,7 @@ contract MintOption is Script {
             });
 
         // 3. mint option
-        pp.mintOptions({
+        panopticPool.mintOptions({
             positionIdList: positionIdList,
             positionSize: 10 * 10 ** 18,
             effectiveLiquidityLimitX32: 0,
